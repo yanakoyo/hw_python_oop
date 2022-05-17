@@ -13,22 +13,20 @@ class InfoMessage:
         self.speed = speed
         self.calories = calories
 
-    def show_training_info(self) -> str:
+    def get_message(self) -> str:
+        """Информация о тренировке"""
         return (f'Тип тренировки: {self.training_type}; '
                 f'Длительность: {self.duration:.3f} ч.; '
                 f'Дистанция: {self.distance:.3f} км; '
                 f'Ср. скорость: {self.speed:.3f} км/ч; '
                 f'Потрачено ккал: {self.calories:.3f}.')
 
-    def get_messagae(self) -> str:
-        """Информация о тренировке"""
-        pass
-
 
 class Training:
     """Базовый класс тренировки."""
     M_IN_KM: int = 1000
-    LEN_STEP: float = 0.65
+    LEN_STEP: float = 0.65  # Зависит от типа тренировки.
+    MIN_IN_HOUR: int = 60
 
     def __init__(self,
                  action: int,
@@ -68,21 +66,20 @@ class Running(Training):
 
     coeff_calorie_r_1 = 18
     coeff_calorie_r_2 = 20
-    M_IN_KM: int = 1000
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
         calories = ((self.coeff_calorie_r_1 * self.get_mean_speed()
                     - self.coeff_calorie_r_2)
-                    * self.weight / self.M_IN_KM * self.duration)
+                    * self.weight / self.M_IN_KM * self.duration
+                    * self.MIN_IN_HOUR)
         return calories
 
 
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
-
     coeff_cal_w_1 = 0.035
-    coe_cal_w_2 = 2
+    coeff_cal_w_2 = 2
     coeff_cal_w_3 = 0.029
 
     def __init__(self,
@@ -98,8 +95,10 @@ class SportsWalking(Training):
         """Получить количество затраченных калорий при спортивной ходьбе."""
         # Формула расчета расхода калорий для спортивной ходьбы.
         calories = ((self.coeff_cal_w_1 * self.weight
-                    + (self.get_mean_speed()**self.coe_cal_w_2 // self.height)
-                    * self.coeff_cal_w_3 * self.weight) * self.duration)
+                    + (self.get_mean_speed()**self.coeff_cal_w_2
+                        // self.height)
+                    * self.coeff_cal_w_3 * self.weight) * self.duration
+                    * self.MIN_IN_HOUR)
         return calories
 
 
