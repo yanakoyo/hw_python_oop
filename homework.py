@@ -1,36 +1,27 @@
+from dataclasses import dataclass, asdict
+from typing import ClassVar
 from typing import List, Dict, Type
 
 
+@dataclass
 class InfoMessage:
     """Информационное сообщение о тренировке."""
-    def __init__(self,
-                 training_type: str,
-                 duration: float,
-                 distance: float,
-                 speed: float,
-                 calories: float) -> None:
-        self.training_type = training_type
-        self.duration = duration
-        self.distance = distance
-        self.speed = speed
-        self.calories = calories
+    training_type: str
+    duration: float
+    distance: float
+    speed: float
+    calories: float
+
+    INFO: ClassVar[str] = (
+        'Тип тренировки: {training_type}; '
+        'Длительность: {duration:.3f} ч.; '
+        'Дистанция: {distance:.3f} км; '
+        'Ср. скорость: {speed:.3f} км/ч; '
+        'Потрачено ккал: {calories:.3f}.'
+    )
 
     def get_message(self) -> str:
-        """Информация о тренировке"""
-        REPORT_MESSAGE = (
-            'Тип тренировки: {tr_type}; \n'
-            'Длительность: {dur:.3f} ч.; \n'
-            'Дистанция: {dis:.3f} км; \n'
-            'Ср. скорость: {sp:.3f} км/ч; \n'
-            'Потрачено ккал: {cal:.3f}.'
-        )
-        return REPORT_MESSAGE.format(
-            tr_type=self.training_type,
-            dur=self.duration,
-            dis=self.distance,
-            sp=self.speed,
-            cal=self.calories
-        )
+        return self.INFO.format(**asdict(self))
 
 
 class Training:
@@ -147,7 +138,8 @@ class Swimming(Training):
         )
 
 
-def read_package(workout_type: Dict[str, Type[Training]], data: List[int]):
+def read_package(workout_type: Dict[str, Type[Training]],
+                 data: List[int]) -> Training:
     """Прочитать данные полученные от датчиков."""
     workout_types = {'SWM': Swimming,
                      'RUN': Running,
