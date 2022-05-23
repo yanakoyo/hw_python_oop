@@ -1,6 +1,5 @@
 from dataclasses import dataclass, asdict
-from typing import ClassVar
-from typing import List, Dict, Type
+from typing import ClassVar, List
 
 
 @dataclass
@@ -12,7 +11,7 @@ class InfoMessage:
     speed: float
     calories: float
 
-    INFO: ClassVar[str] = (
+    TRAINING_INFO: ClassVar[str] = (
         'Тип тренировки: {training_type}; '
         'Длительность: {duration:.3f} ч.; '
         'Дистанция: {distance:.3f} км; '
@@ -21,7 +20,7 @@ class InfoMessage:
     )
 
     def get_message(self) -> str:
-        return self.INFO.format(**asdict(self))
+        return self.TRAINING_INFO.format(**asdict(self))
 
 
 class Training:
@@ -51,7 +50,7 @@ class Training:
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-        pass
+        raise NotImplementedError('Function defined in subclass')
 
     def show_training_info(self) -> InfoMessage:
         """Вернуть информационное сообщение о выполненной тренировке."""
@@ -67,8 +66,8 @@ class Training:
 class Running(Training):
     """Тренировка: бег."""
 
-    COEF_CAL_RUN_1 = 18
-    COEF_CAL_RUN_2 = 20
+    COEF_CAL_RUN_1: int = 18
+    COEF_CAL_RUN_2: int = 20
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
@@ -80,9 +79,9 @@ class Running(Training):
 
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
-    COEF_CAL_WLK_1 = 0.035
-    COEF_CAL_WLK_2 = 2
-    COEF_CAL_WLK_3 = 0.029
+    COEF_CAL_WLK_1: float = 0.035
+    COEF_CAL_WLK_2: int = 2
+    COEF_CAL_WLK_3: float = 0.029
 
     def __init__(self,
                  action: int,
@@ -138,16 +137,17 @@ class Swimming(Training):
         )
 
 
-def read_package(workout_type: Dict[str, Type[Training]],
+def read_package(workout_type: str,
                  data: List[int]) -> Training:
     """Прочитать данные полученные от датчиков."""
     workout_types = {'SWM': Swimming,
                      'RUN': Running,
                      'WLK': SportsWalking}
-    if workout_type in workout_types:
-        return workout_types[workout_type](*data)
-    elif KeyError:
-        print('Тренировка не найдена')
+
+    if workout_type not in workout_types:
+        raise KeyError('Тренировка не найдена')
+
+    return workout_types[workout_type](*data)
 
 
 def main(training: Training) -> None:
